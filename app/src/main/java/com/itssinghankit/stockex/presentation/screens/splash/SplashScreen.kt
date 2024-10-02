@@ -8,8 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun SplashScreen(modifier: Modifier = Modifier) {
+fun SplashScreen(modifier: Modifier = Modifier,navigateToHomeScreen:()->Unit) {
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
         Text("Splash Screen", modifier = modifier.padding(innerPadding))
+        navigateToHomeScreen()
     }
 }

@@ -17,6 +17,7 @@ val darkblack90 = Color(0xFFe6e6e6)
 val darkblack91 = Color(0xFFE7E7E7)
 val darkblack95 = Color(0xFFf2f2f2)
 val darkblack99 = Color(0xFFfbfbfb)
+val transparentblack = Color(0x80000000)
 
 //colors
 val Black05=Color(0xFF0d0d0d)

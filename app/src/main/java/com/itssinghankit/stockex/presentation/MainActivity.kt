@@ -8,7 +8,9 @@ import androidx.navigation.compose.rememberNavController
 import com.itssinghankit.stockex.presentation.navigation.Navigator
 import com.itssinghankit.stockex.presentation.navigation.RootNavGraph
 import com.itssinghankit.stockex.presentation.ui.StockexTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
