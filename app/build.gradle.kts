@@ -73,4 +73,35 @@ dependencies {
     ksp (libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.symbol.processing.api)
+
+    //coroutines
+    implementation (libs.kotlinx.coroutines.android)
+    implementation (libs.kotlinx.coroutines.core)
+
+    //OkHttp
+    implementation (libs.okhttp)
+    implementation (libs.logging.interceptor)
+
+    //retrofit
+    implementation (libs.squareup.retrofit)
+    implementation (libs.converter.gson)
+
+    //timber
+    implementation( libs.timber)
+
+    //compose preview
+    debugImplementation (libs.ui.tooling.preview)
+
+    //coil
+    implementation (libs.coil.compose)
+
+    //material library and icons
+    implementation (libs.material3)
+    implementation (libs.androidx.material.icons.extended)
+
+    //AndroidX Navigation
+    implementation (libs.androidx.navigation.compose)
+
+    //collectAsStateWithLifecycle
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }
