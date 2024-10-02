@@ -1,4 +1,4 @@
-package com.itssinghankit.stockex.ui.theme
+package com.itssinghankit.stockex.presentation.ui
 
 import androidx.compose.ui.graphics.Color
 
