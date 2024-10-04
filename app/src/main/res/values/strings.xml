@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Stockex</string>
+    <string name="home_screen_avatar"><![CDATA[https://img.freepik.com/premium-photo/3d-avatar-cartoon-character_113255-92971.jpg?size=626&ext=jpg&ga=GA1.1.747208650.1727885311&semt=ais_hybrid]]></string>
+    <string name="home_screen_name">Ankit Singh</string>
+    <string name="search_stock">Search stock</string>
+    <string name="errorInternalServerError">Something went wrong</string>
+    <string name="errorCheckInternet">Check your Internet Connection</string>
+    <string name="company_logo">https://cdn.vectorstock.com/i/1000x1000/66/18/corporate-business-building-logo-graphic-style-vector-27726618.webp</string>
 </resources>

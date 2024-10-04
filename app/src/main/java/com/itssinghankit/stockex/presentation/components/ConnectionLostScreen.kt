@@ -2,7 +2,6 @@ package com.itssinghankit.stockex.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,9 +36,8 @@ fun ConnectionLostScreen() {
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.outline)
                 .padding(vertical = 6.dp),
-            textAlign = TextAlign.Center,
-
-            )
+            textAlign = TextAlign.Center
+        )
     }
 
 

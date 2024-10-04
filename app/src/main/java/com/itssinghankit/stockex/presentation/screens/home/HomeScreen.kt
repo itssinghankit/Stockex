@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -15,39 +16,40 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.itssinghankit.stockex.R
 import com.itssinghankit.stockex.presentation.components.ConnectionLostScreen
 import com.itssinghankit.stockex.presentation.components.SnackBarHostComponent
+import com.itssinghankit.stockex.presentation.ui.transparentblack
 import com.itssinghankit.stockex.util.NetworkMonitor
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
-    onEvent: (HomeEvents) -> Unit
+    onEvent: (HomeEvents) -> Unit,
+    onSearchClicked: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val states by viewModel.states.collectAsStateWithLifecycle()
@@ -56,8 +58,7 @@ fun HomeScreen(
     }
     val networkState by
     viewModel.networkState.collectAsStateWithLifecycle(initialValue = NetworkMonitor.NetworkState.Lost)
-    var active by rememberSaveable { mutableStateOf(false) }
-    val searchQuery = viewModel.searchQuery
+
 
     //Showing snackBar for Errors
     states.errorMessage?.let { errorMessage ->
@@ -67,12 +68,11 @@ fun HomeScreen(
         }
     }
 
+    Box {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            if (!active) {
                 TopAppBar()
-            }
         },
         snackbarHost = {
             SnackBarHostComponent(hostState = snackBarHostState) {
@@ -80,67 +80,56 @@ fun HomeScreen(
             }
         }) { innerPadding ->
 
-        Box {
+
             HomeContent(
                 modifier = modifier.padding(innerPadding),
-                active = active,
-                onActiveChanged = {
-                    active = it
-                    //to remove loading
-                    if (!active) {
-                        onEvent(HomeEvents.OnSearchActiveClosed)
-                    }
-                },
-                isLoading = states.isLoading,
-                searchQuery = searchQuery,
-                onSearchQueryChanged = { onEvent(HomeEvents.onSearchQueryChanged(it)) },
-                searchResult = null,
-                onSearchClicked = {}
+                onSearchClicked = onSearchClicked
             )
-            if (!networkState.isAvailable()) ConnectionLostScreen()
-        }
 
+        }
+        if (!networkState.isAvailable()) ConnectionLostScreen()
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     modifier: Modifier = Modifier,
-    active: Boolean,
-    onActiveChanged: (Boolean) -> Unit,
-    isLoading: Boolean,
-    searchQuery: String,
-    onSearchQueryChanged: (String) -> Unit,
-    searchResult: List<String>?,
-    onSearchClicked: (String) -> Unit,
+    onSearchClicked: () -> Unit
 ) {
 
     Column(modifier = modifier) {
-        SearchTextField(Modifier.padding(top = 8.dp))
+        SearchTextField(modifier = Modifier.padding(top = 8.dp), onSearchClicked = onSearchClicked)
     }
 
 }
 
 @Composable
-fun SearchTextField(modifier: Modifier = Modifier) {
+fun SearchTextField(modifier: Modifier = Modifier, onSearchClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(color = MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.small)
-            .clickable {  }
+            .background(
+                color = MaterialTheme.colorScheme.outline,
+                shape = MaterialTheme.shapes.small
+            )
+            .clickable { onSearchClicked() }
     ) {
         Row(
             modifier = Modifier.padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search icon", tint =  MaterialTheme.colorScheme.secondary, modifier = Modifier.size(18.dp))
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = "Search icon",
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(18.dp)
+            )
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = "Search stock...",
+                text = stringResource(R.string.search_stock),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -152,8 +141,8 @@ fun SearchTextField(modifier: Modifier = Modifier) {
 @Composable
 fun TopAppBar(
     modifier: Modifier = Modifier,
-    name: String = "Ankit Singh",
-    avatar: String = "https://img.freepik.com/premium-photo/3d-avatar-cartoon-character_113255-92971.jpg?size=626&ext=jpg&ga=GA1.1.747208650.1727885311&semt=ais_hybrid"
+    name: String = stringResource(R.string.home_screen_name),
+    avatar: String = stringResource(R.string.home_screen_avatar),
 ) {
 
     Row(
@@ -171,7 +160,8 @@ fun TopAppBar(
                     .size(48.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop,
-                placeholder = MaterialTheme.colorScheme.outlineVariant.let { ColorPainter(it) },
+                placeholder = MaterialTheme.colorScheme.outlineVariant.let { ColorPainter(it) }
+
             )
             Column {
                 Text(

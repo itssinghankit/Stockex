@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -22,6 +24,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        //      For protecting api keys from version controls systems
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream());
+
+        buildConfigField("String", "RAPID_API_KEY", "\"${properties.getProperty("RAPID_API_KEY")}\"");
+        buildConfigField("String", "RAPID_API_HOST", "\"${properties.getProperty("RAPID_API_HOST")}\"");
+        buildConfigField("String","BASE_URL","\"${properties.getProperty("BASE_URL")}\"")
     }
 
     buildTypes {
@@ -42,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig=true
     }
 
     packaging {
@@ -108,4 +119,9 @@ dependencies {
 
     //kotlinx serialization
     implementation (libs.kotlinx.serialization.json)
+
+    //vico
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.core)
 }

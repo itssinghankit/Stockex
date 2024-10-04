@@ -10,5 +10,11 @@ sealed class ScreenSealedClass {
 
     @Serializable
     data object HomeScreen:ScreenSealedClass()
+
+    @Serializable
+    data object SearchScreen:ScreenSealedClass()
+
+    @Serializable
+    data class DetailsScreen(val symbol:String):ScreenSealedClass()
 }
 

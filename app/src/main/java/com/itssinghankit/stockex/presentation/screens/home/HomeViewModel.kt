@@ -1,8 +1,5 @@
 package com.itssinghankit.stockex.presentation.screens.home
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.itssinghankit.stockex.util.NetworkMonitor
 import com.itssinghankit.stockex.util.UiText
@@ -25,7 +22,6 @@ class HomeViewModel @Inject constructor(
     private val _states = MutableStateFlow(HomeStates())
     val states: StateFlow<HomeStates> = _states
 
-    var searchQuery by mutableStateOf("")
 
     val networkState = networkMonitor.networkState
 
@@ -37,9 +33,6 @@ class HomeViewModel @Inject constructor(
                     it.copy(errorMessage = null)
                 }
             }
-
-            HomeEvents.OnSearchActiveClosed -> TODO()
-            is HomeEvents.onSearchQueryChanged -> TODO()
         }
     }
 

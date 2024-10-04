@@ -16,6 +16,13 @@ class Navigator(private val navController: NavHostController) {
                 }
             }
 
+            NavigationActions.NavigateToSearchScreen -> {
+                navController.navigate(ScreenSealedClass.SearchScreen)
+            }
+
+            is NavigationActions.NavigateToDetailsScreen -> {
+                navController.navigate(ScreenSealedClass.DetailsScreen(action.symbol))
+            }
         }
     }
 

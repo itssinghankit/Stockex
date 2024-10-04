@@ -25,6 +25,7 @@ squareupRetrofit = "2.9.0"
 symbolProcessingApi = "2.0.20-1.0.25"
 timber = "5.0.1"
 uiToolingPreview = "1.7.2"
+vico = "2.0.0-beta.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -59,6 +60,9 @@ squareup-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = 
 symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "symbolProcessingApi" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "vico" }
 
 
 [plugins]
