@@ -6,4 +6,10 @@
     <string name="errorInternalServerError">Something went wrong</string>
     <string name="errorCheckInternet">Check your Internet Connection</string>
     <string name="company_logo">https://cdn.vectorstock.com/i/1000x1000/66/18/corporate-business-building-logo-graphic-style-vector-27726618.webp</string>
+    <string name="show_analytics"><![CDATA[Show Analytics >]]></string>
+    <string name="_10_32_3_4">+10.32 (3.4%)</string>
+    <string name="portfolio_value">Portfolio value :</string>
+    <string name="_90_322_96">$90.322.96</string>
+    <string name="top_loosers">Top Loosers</string>
+    <string name="top_gainers">Top Gainers</string>
 </resources>

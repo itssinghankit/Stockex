@@ -139,50 +139,6 @@ class SearchViewModel @Inject constructor(
             }
         }
 
-//        viewModelScope.launch {
-//
-//            _states.update {
-//                it.copy(
-//                    isLoading = false,
-//                    searchResult = listOf(
-//                        "a",
-//                        "b",
-//                        "c",
-//                        "d",
-//                        "e",
-//                        "f",
-//                        "g",
-//                        "h",
-//                        "i",
-//                        "j",
-//                        "k",
-//                        "l",
-//                        "m",
-//                        "n",
-//                        "o",
-//                        "p",
-//                        "q",
-//                        "r",
-//                        "s",
-//                        "t",
-//                        "u",
-//                        "v",
-//                        "w",
-//                        "x",
-//                        "y",
-//                        "z"
-//                    ),
-//                    recentSearchList = it.recentSearchList.apply {
-//                        add(0,searchQuery)
-//                    }
-//                )
-//            }
-//
-//        }
-
-
-
-
     }
 
 }

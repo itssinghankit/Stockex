@@ -19,7 +19,7 @@ fun RootNavGraph(rootNavController: NavHostController, navigator: Navigator) {
 
     NavHost(
         navController = rootNavController,
-        startDestination = ScreenSealedClass.DetailsScreen("AAPL")
+        startDestination = ScreenSealedClass.DetailsScreen("IBM")
     ) {
 
         composeAnimatedSlide<ScreenSealedClass.SplashScreen> {

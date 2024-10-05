@@ -16,4 +16,5 @@ interface StockexApi {
 
     ): SearchResDto
 
+
 }

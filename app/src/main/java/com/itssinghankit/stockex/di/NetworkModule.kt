@@ -1,6 +1,7 @@
 package com.itssinghankit.stockex.di
 
 import com.itssinghankit.stockex.BuildConfig
+import com.itssinghankit.stockex.data.remote.AlphaVantageApi
 import com.itssinghankit.stockex.data.remote.StockexApi
 import com.itssinghankit.stockex.data.remote.StockexInterceptor
 import com.itssinghankit.stockex.data.repository.RepositoryImplementation
@@ -20,6 +21,10 @@ import javax.inject.Singleton
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class Rapid
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AlphaVantage
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -52,14 +57,27 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    @AlphaVantage
+    fun providesAlphaVantageRetrofitRapid(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder().baseUrl(BuildConfig.ALPHA_VANTAGE_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()
+    }
+    @Singleton
+    @Provides
     fun providesStockexApiInterface(@Rapid retrofit: Retrofit): StockexApi {
         return retrofit.create(StockexApi::class.java)
     }
 
     @Singleton
     @Provides
-    fun providesAuthRepository(stockexApi: StockexApi): RepositoryInterface {
-        return RepositoryImplementation(stockexApi)
+    fun providesAlphaApiInterface(@AlphaVantage retrofit: Retrofit): AlphaVantageApi {
+        return retrofit.create(AlphaVantageApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providesAuthRepository(stockexApi: StockexApi,alphaVantageApi: AlphaVantageApi): RepositoryInterface {
+        return RepositoryImplementation(stockexApi,alphaVantageApi)
     }
 
 }
