@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.itssinghankit.stockex.R
 import com.itssinghankit.stockex.domain.model.home.GainersLoosersModel
+import kotlin.math.abs
 
 @Composable
 fun GainersAndLoosers(
@@ -76,6 +77,11 @@ fun StockCard(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
+        val changeTxt = if (changeAmount.toFloat() > 0) {
+            "+$${String.format("%.2f",changeAmount.toFloat())} (+${percentage})"
+        } else {
+            "-$${abs(changeAmount.toFloat())} (-${abs(percentage.toFloat())}"
+        }
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier.padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
                 AsyncImage(
@@ -107,14 +113,14 @@ fun StockCard(
             }
             Text(
                 modifier = Modifier.padding(top = 24.dp),
-                text = "$price USD",
+                text = "${String.format("%.2f",price.toFloat())} USD",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
                 modifier = Modifier.padding(top = 6.dp),
-                text = "$changeAmount ($percentage)",
+                text = changeTxt,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.SemiBold,
                 color = if (changeAmount.toDouble() > 0) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.error,

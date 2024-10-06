@@ -1,5 +1,7 @@
 package com.itssinghankit.stockex.presentation.screens.details
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -35,9 +38,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -60,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.itssinghankit.stockex.R
 import com.itssinghankit.stockex.domain.model.details.DetailsModel
+import com.itssinghankit.stockex.domain.model.details.DetailsPricePercentModel
 import com.itssinghankit.stockex.presentation.components.ConnectionLostScreen
 import com.itssinghankit.stockex.presentation.components.FundamentalRow
 import com.itssinghankit.stockex.presentation.components.Loading
@@ -67,20 +70,23 @@ import com.itssinghankit.stockex.presentation.components.SnackBarHostComponent
 import com.itssinghankit.stockex.util.NetworkMonitor
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.compose.common.vicoTheme
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.common.Dimensions
+import com.patrykandpatrick.vico.core.common.component.LineComponent
+import com.patrykandpatrick.vico.core.common.component.TextComponent
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailsScreen(
     modifier: Modifier = Modifier,
@@ -90,6 +96,7 @@ fun DetailsScreen(
 ) {
     val scope = rememberCoroutineScope()
     val states by viewModel.states.collectAsStateWithLifecycle()
+    val graphStates by viewModel.graphData.collectAsStateWithLifecycle()
     val snackBarHostState: SnackbarHostState = remember {
         SnackbarHostState()
     }
@@ -123,7 +130,11 @@ fun DetailsScreen(
                 modifier = Modifier.padding(innerPadding),
                 fundamentalsData = states.fundamentalData,
                 isLoading = states.isLoading,
-                chartData = states.chartData
+                chartData = graphStates.selectedChartData,
+                selectedChart = graphStates.selectedChart,
+                onSelectionChart = { onEvent(DetailsEvents.OnSelectionChart(it)) },
+                isGraphLoading = graphStates.isGraphLoading,
+                pricePercentDetails = states.pricePercentData
             )
 
         }
@@ -132,7 +143,16 @@ fun DetailsScreen(
 }
 
 @Composable
-fun DetailsContent(modifier: Modifier, fundamentalsData: DetailsModel?, isLoading: Boolean,chartData: StockChartData?) {
+fun DetailsContent(
+    modifier: Modifier,
+    fundamentalsData: DetailsModel?,
+    isLoading: Boolean,
+    chartData: StockChartData?,
+    selectedChart: ChartType,
+    onSelectionChart: (selectedChart: ChartType) -> Unit,
+    isGraphLoading: Boolean,
+    pricePercentDetails: DetailsPricePercentModel?
+) {
     if (isLoading) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Loading()
@@ -145,7 +165,11 @@ fun DetailsContent(modifier: Modifier, fundamentalsData: DetailsModel?, isLoadin
                     exchange = fundamentalsData.exchange,
                     assetType = fundamentalsData.assetType,
                     symbol = fundamentalsData.symbol,
-                    chartData = chartData
+                    chartData = chartData,
+                    selectedChart = selectedChart,
+                    onSelectionChart = onSelectionChart,
+                    isGraphLoading = isGraphLoading,
+                    detailsPricePercentModel = pricePercentDetails
                 )
                 ExpandableCompanyInfoCard(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -286,7 +310,11 @@ fun GraphCard(
     symbol: String,
     assetType: String,
     exchange: String,
-    chartData: StockChartData?
+    chartData: StockChartData?,
+    selectedChart: ChartType,
+    onSelectionChart: (selectedChart: ChartType) -> Unit,
+    isGraphLoading: Boolean,
+    detailsPricePercentModel: DetailsPricePercentModel?
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -324,11 +352,22 @@ fun GraphCard(
                 }
             }
 
-            StockPriceDetails(modifier.padding(horizontal = 4.dp))
-            if (chartData != null) {
-                LineGraph(modifier = Modifier.padding(top = 16.dp),chartData=chartData)
+            detailsPricePercentModel?.let {
+                StockPriceDetails(
+                    modifier.padding(horizontal = 4.dp),
+                    detailsPricePercentModel.price,
+                    detailsPricePercentModel.change,
+                    detailsPricePercentModel.changePercent
+                )
             }
-            GraphFilters()
+            if (chartData != null) {
+                LineGraph(
+                    modifier = Modifier.padding(top = 16.dp),
+                    chartData = chartData,
+                    isGraphLoading = isGraphLoading
+                )
+            }
+            GraphFilters(selectedChartType = selectedChart, onSelectionChart = onSelectionChart)
 
         }
     }
@@ -336,16 +375,18 @@ fun GraphCard(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GraphFilters() {
+fun GraphFilters(
+    selectedChartType: ChartType,
+    onSelectionChart: (selectedChart: ChartType) -> Unit
+) {
 
-    var selectedFilterIndex by rememberSaveable { mutableIntStateOf(1) }
     val filterData = listOf(
-        FilterData(1, "1D"),
-        FilterData(2, "1W"),
-        FilterData(3, "1M"),
-        FilterData(4, "1Y"),
-        FilterData(5, "5Y"),
-        FilterData(6, "ALL")
+        FilterData(ChartType.DAY, "1D"),
+        FilterData(ChartType.WEEK, "1W"),
+        FilterData(ChartType.MONTH, "1M"),
+        FilterData(ChartType.ONE_YEAR, "1Y"),
+        FilterData(ChartType.FIVE_YEAR, "5Y"),
+        FilterData(ChartType.ALL, "ALL")
     )
 
     FlowRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
@@ -358,9 +399,9 @@ fun GraphFilters() {
                         fontWeight = FontWeight.Bold
                     )
                 },
-                selected = filter.id == selectedFilterIndex,
+                selected = filter.id == selectedChartType,
                 onClick = {
-                    selectedFilterIndex = filter.id
+                    onSelectionChart(filter.id)
                 },
                 modifier = Modifier.padding(8.dp)
             )
@@ -369,20 +410,25 @@ fun GraphFilters() {
 }
 
 @Composable
-fun StockPriceDetails(modifier: Modifier) {
+fun StockPriceDetails(modifier: Modifier, price: String, change: String, percentChange: String) {
+    val changeTxt = if (change.toFloat() > 0) {
+        "+$${String.format("%.2f",change.toFloat())} (+${percentChange})"
+    } else {
+        "-$${abs(change.toFloat())} (-${abs(percentChange.toFloat())}"
+    }
     Column(modifier = modifier) {
         Text(
-            text = "$1576.29",
+            text = "$${String.format("%.2f",price.toFloat())}",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
             modifier = Modifier.padding(top = 6.dp),
-            text = "+$12.29 (+0.78%)",
+            text = changeTxt,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onTertiaryContainer
+            color = if (change.toFloat() > 0) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.error
         )
 
     }
@@ -390,31 +436,51 @@ fun StockPriceDetails(modifier: Modifier) {
 
 
 @Composable
-fun LineGraph(modifier: Modifier = Modifier,chartData: StockChartData) {
+fun LineGraph(modifier: Modifier = Modifier, chartData: StockChartData, isGraphLoading: Boolean) {
+    Box(contentAlignment = Alignment.Center) {
+        CartesianChartHost(
 
-    CartesianChartHost(
-
-        chart = rememberCartesianChart(
-            rememberLineCartesianLayer(
-                lineProvider = LineCartesianLayer.LineProvider.series(
-                    vicoTheme.lineCartesianLayerColors.map { color ->
-                        LineCartesianLayer.rememberLine(
-                            LineCartesianLayer.LineFill.single(
-                                fill(
-                                    MaterialTheme.colorScheme.tertiary
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(
+                    lineProvider = LineCartesianLayer.LineProvider.series(
+                        vicoTheme.lineCartesianLayerColors.map { color ->
+                            LineCartesianLayer.rememberLine(
+                                LineCartesianLayer.LineFill.single(
+                                    fill(
+                                        MaterialTheme.colorScheme.tertiary
+                                    )
                                 )
                             )
-                        )
-                    }
+                        }
+                    ),
                 ),
-            ),
-            startAxis = VerticalAxis.rememberStart(guideline = null),
-            bottomAxis = HorizontalAxis.rememberBottom(guideline = null, valueFormatter = chartData.formattedLabels),
-        ),
-        modelProducer=chartData.charModelProducer,
-        modifier = modifier.fillMaxWidth()
+                marker = rememberDefaultCartesianMarker(
+                    label = TextComponent(
+                        color = hexColorString(MaterialTheme.colorScheme.primary),
+                        padding = Dimensions(8f, 16f)
+                    ),
+                    valueFormatter = { a, b -> chartData.markerLabels[b[0].x.toInt()] },
+                    guideline = LineComponent(color = hexColorString(MaterialTheme.colorScheme.secondary))
+                ),
+                bottomAxis = HorizontalAxis.rememberBottom(
+                    line = rememberLineComponent(color = MaterialTheme.colorScheme.outlineVariant),
+                    guideline = null,
+                    valueFormatter = { _, _, _ -> " " },
+                    tick = null
+                )
 
-    )
+            ),
+            scrollState = rememberVicoScrollState(scrollEnabled = false),
+            modelProducer = chartData.charModelProducer,
+            modifier = modifier.fillMaxWidth()
+
+        )
+
+        if (isGraphLoading) {
+            Loading(modifier.offset(y = (-55).dp))
+        }
+    }
+
 }
 
 @Composable
@@ -449,7 +515,11 @@ fun DetailsAppBar(
     }
 }
 
+fun hexColorString(color: Color): Int {
+    return android.graphics.Color.parseColor(String.format("#%08X", color.toArgb()))
+}
+
 data class FilterData(
-    val id: Int,
+    val id: ChartType,
     val label: String,
 )
