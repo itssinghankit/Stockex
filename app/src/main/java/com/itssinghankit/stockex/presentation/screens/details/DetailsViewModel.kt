@@ -91,15 +91,16 @@ class DetailsViewModel @Inject constructor(
             }
 
             is DetailsEvents.OnSelectionChart -> {
+                Timber.d("month: ${_graphData.value.month}")
+                Timber.d("year: ${_graphData.value.oneYear}")
+
                 when (event.chartType) {
                     ChartType.DAY -> {
                         _graphData.update { it.copy(selectedChart = ChartType.DAY) }
                         if (_graphData.value.day == null) {
                             getDayChartData()
                         } else {
-                            _graphData.update {
-                                it.copy(selectedChartData = _graphData.value.day)
-                            }
+                            createChartData(_graphData.value.day!!,ChartType.DAY)
                         }
                     }
 
@@ -108,9 +109,7 @@ class DetailsViewModel @Inject constructor(
                         if (_graphData.value.week == null) {
                             getWeekChartData()
                         } else {
-                            _graphData.update {
-                                it.copy(selectedChartData = _graphData.value.week)
-                            }
+                            createChartData(_graphData.value.week!!,ChartType.WEEK)
                         }
                     }
 
@@ -119,10 +118,7 @@ class DetailsViewModel @Inject constructor(
                         if (_graphData.value.month == null) {
                            getMonthChartData()
                         } else {
-                            _graphData.update {
-                                Timber.d("Called")
-                                it.copy(selectedChartData = _graphData.value.month)
-                            }
+                            createChartData(_graphData.value.month!!,ChartType.MONTH)
                         }
                     }
 
@@ -131,9 +127,7 @@ class DetailsViewModel @Inject constructor(
                         if (_graphData.value.oneYear == null) {
                             getOneYrChartData()
                         } else {
-                            _graphData.update {
-                                it.copy(selectedChartData = _graphData.value.oneYear)
-                            }
+                            createChartData(_graphData.value.oneYear!!,ChartType.ONE_YEAR)
                         }
                     }
 
@@ -142,9 +136,7 @@ class DetailsViewModel @Inject constructor(
                         if (_graphData.value.fiveYear == null) {
                             getFiveYrChartData()
                         } else {
-                            _graphData.update {
-                                it.copy(selectedChartData = _graphData.value.fiveYear)
-                            }
+                            createChartData(_graphData.value.fiveYear!!,ChartType.FIVE_YEAR)
                         }
                     }
 
@@ -153,9 +145,7 @@ class DetailsViewModel @Inject constructor(
                         if (_graphData.value.all == null) {
                             getAllYrChartData()
                         } else {
-                            _graphData.update {
-                                it.copy(selectedChartData = _graphData.value.all)
-                            }
+                            createChartData(_graphData.value.all!!,ChartType.ALL)
                         }
                     }
                 }
@@ -186,7 +176,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -234,6 +233,16 @@ class DetailsViewModel @Inject constructor(
                                     _states.update {
                                         it.copy(
                                             errorMessage = UiText.StringResource(R.string.errorInternalServerError),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
                                             isLoading = false
                                         )
                                     }
@@ -288,7 +297,6 @@ class DetailsViewModel @Inject constructor(
             modelProducer.runTransaction {
                 lineSeries { series(xAxisValues, yAxisValues) }
             }
-
         }
         _graphData.update {
             it.copy(
@@ -302,7 +310,6 @@ class DetailsViewModel @Inject constructor(
                     it.copy(
                         selectedChartData = StockChartData(labels, modelProducer),
                         isGraphLoading = false,
-                        day = StockChartData(labels, modelProducer)
                     )
                 }
             }
@@ -311,7 +318,6 @@ class DetailsViewModel @Inject constructor(
                     it.copy(
                         selectedChartData = StockChartData(labels, modelProducer),
                         isGraphLoading = false,
-                        week = StockChartData(labels, modelProducer)
                     )
                 }
             }
@@ -320,7 +326,6 @@ class DetailsViewModel @Inject constructor(
                     it.copy(
                         selectedChartData = StockChartData(labels, modelProducer),
                         isGraphLoading = false,
-                        month = StockChartData(labels, modelProducer)
                     )
                 }
             }
@@ -329,7 +334,6 @@ class DetailsViewModel @Inject constructor(
                     it.copy(
                         selectedChartData = StockChartData(labels, modelProducer),
                         isGraphLoading = false,
-                        oneYear = StockChartData(labels, modelProducer)
                     )
                 }
             }
@@ -338,7 +342,6 @@ class DetailsViewModel @Inject constructor(
                     it.copy(
                         selectedChartData = StockChartData(labels, modelProducer),
                         isGraphLoading = false,
-                        fiveYear = StockChartData(labels, modelProducer)
                     )
                 }
             }
@@ -347,7 +350,6 @@ class DetailsViewModel @Inject constructor(
                     it.copy(
                         selectedChartData = StockChartData(labels, modelProducer),
                         isGraphLoading = false,
-                        all = StockChartData(labels, modelProducer)
                     )
                 }
             }
@@ -379,7 +381,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -397,6 +408,11 @@ class DetailsViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         withContext(Dispatchers.Main) {
+                            _graphData.update {
+                                it.copy(
+                                    day = result.data
+                                )
+                            }
                             createChartData(result.data,ChartType.DAY)
                         }
                     }
@@ -429,7 +445,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -447,6 +472,11 @@ class DetailsViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         withContext(Dispatchers.Main) {
+                            _graphData.update {
+                                it.copy(
+                                    week = result.data
+                                )
+                            }
                             createChartData(result.data,ChartType.WEEK)
                         }
                     }
@@ -479,7 +509,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -497,6 +536,11 @@ class DetailsViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         withContext(Dispatchers.Main) {
+                            _graphData.update {
+                                it.copy(
+                                    month = result.data
+                                )
+                            }
                             createChartData(result.data,ChartType.MONTH)
                         }
                     }
@@ -529,7 +573,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -547,6 +600,11 @@ class DetailsViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         withContext(Dispatchers.Main) {
+                            _graphData.update {
+                                it.copy(
+                                    oneYear = result.data
+                                )
+                            }
                             createChartData(result.data,ChartType.ONE_YEAR)
                         }
                     }
@@ -579,7 +637,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -597,6 +664,11 @@ class DetailsViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         withContext(Dispatchers.Main) {
+                            _graphData.update {
+                                it.copy(
+                                    fiveYear = result.data
+                                )
+                            }
                             createChartData(result.data,ChartType.FIVE_YEAR)
                         }
                     }
@@ -629,7 +701,16 @@ class DetailsViewModel @Inject constructor(
                                     }
                                 }
                             }
-
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 withContext(Dispatchers.Main) {
                                     _states.update {
@@ -647,6 +728,11 @@ class DetailsViewModel @Inject constructor(
 
                     is ApiResult.Success -> {
                         withContext(Dispatchers.Main) {
+                            _graphData.update {
+                                it.copy(
+                                    all = result.data
+                                )
+                            }
                             createChartData(result.data,ChartType.ALL)
                         }
                     }

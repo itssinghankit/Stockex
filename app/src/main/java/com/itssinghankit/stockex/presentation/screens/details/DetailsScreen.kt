@@ -414,7 +414,7 @@ fun StockPriceDetails(modifier: Modifier, price: String, change: String, percent
     val changeTxt = if (change.toFloat() > 0) {
         "+$${String.format("%.2f",change.toFloat())} (+${percentChange})"
     } else {
-        "-$${abs(change.toFloat())} (-${abs(percentChange.toFloat())}"
+        "-$${abs(change.toFloat())} (${percentChange}"
     }
     Column(modifier = modifier) {
         Text(

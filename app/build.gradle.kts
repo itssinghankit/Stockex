@@ -33,6 +33,7 @@ android {
         buildConfigField("String", "RAPID_API_HOST", "\"${properties.getProperty("RAPID_API_HOST")}\"");
         buildConfigField("String","BASE_URL","\"${properties.getProperty("BASE_URL")}\"")
         buildConfigField("String","ALPHA_VANTAGE_BASE_URL","\"${properties.getProperty("ALPHA_VANTAGE_BASE_URL")}\"")
+        buildConfigField("String","ALPHA_VANTAGE_API_KEY","\"${properties.getProperty("ALPHA_VANTAGE_API_KEY")}\"")
     }
 
     buildTypes {

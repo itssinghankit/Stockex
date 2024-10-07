@@ -54,6 +54,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
     onEvent: (HomeEvents) -> Unit,
+    navigateToDetailScreen:(String)->Unit,
     onSearchClicked: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -90,7 +91,8 @@ fun HomeScreen(
                 modifier = modifier.padding(innerPadding),
                 onSearchClicked = onSearchClicked,
                 gainersLoosers =states.gainersLoosers,
-                isLoading =states.isLoading
+                isLoading =states.isLoading,
+                onCardClick = navigateToDetailScreen
             )
 
         }
@@ -104,7 +106,8 @@ fun HomeContent(
     modifier: Modifier = Modifier,
     onSearchClicked: () -> Unit,
     gainersLoosers:GetGainersLoosersModel?,
-    isLoading:Boolean
+    isLoading:Boolean,
+    onCardClick:(String)->Unit
 ) {
 
     if(isLoading){
@@ -118,10 +121,10 @@ fun HomeContent(
             gainersLoosers?.let {
                 GainersAndLoosers(modifier=Modifier.padding(horizontal = 16.dp, vertical = 8.dp), topic = stringResource(
                     R.string.top_gainers
-                ), gainersLoosersList = gainersLoosers.gainers)
+                ), gainersLoosersList = gainersLoosers.gainers,onCardClick=onCardClick)
                 GainersAndLoosers(modifier=Modifier.padding(horizontal = 16.dp, vertical = 16.dp), topic = stringResource(
                     R.string.top_loosers
-                ), gainersLoosersList = gainersLoosers.loosersModel)
+                ), gainersLoosersList = gainersLoosers.loosersModel,onCardClick=onCardClick)
             }
         }
     }
@@ -133,7 +136,7 @@ fun PortFolioCard(modifier: Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraSmall,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onTertiary)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.outline)
     ) {
         val isNightMode = isSystemInDarkTheme()
         Column {
@@ -141,7 +144,7 @@ fun PortFolioCard(modifier: Modifier) {
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
                 text = stringResource(R.string.portfolio_value),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.secondary,
             )
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -165,7 +168,7 @@ fun PortFolioCard(modifier: Modifier) {
                 Text(
                    text = stringResource(R.string.show_analytics),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold
                 )
             }

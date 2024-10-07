@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class MonthGraphDto(
     @SerializedName("Meta Data")
     val metaData: MetaData,
-    @SerializedName("Time Series (5min)")
+    @SerializedName("Time Series (15min)")
     val timeSeries: Map<String, TimeSeriesEntry>
 )
 

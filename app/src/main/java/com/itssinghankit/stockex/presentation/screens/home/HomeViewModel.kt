@@ -72,6 +72,16 @@ class HomeViewModel @Inject constructor(
                                     }
                                 }
                             }
+                            DataError.Network.API_LIMIT_EXCEEDED -> {
+                                withContext(Dispatchers.Main) {
+                                    _states.update {
+                                        it.copy(
+                                            errorMessage = UiText.StringResource(R.string.errorApiLimit),
+                                            isLoading = false
+                                        )
+                                    }
+                                }
+                            }
 
                             else -> {
                                 withContext(Dispatchers.Main) {

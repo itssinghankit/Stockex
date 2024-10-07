@@ -6,8 +6,7 @@ import com.example.sharesphere.util.ApiResult
 import com.example.sharesphere.util.DataError
 import com.itssinghankit.stockex.domain.model.details.ChartModel
 import com.itssinghankit.stockex.domain.repository.RepositoryInterface
-import com.itssinghankit.stockex.util.dateTimeToDate
-import com.itssinghankit.stockex.util.dateTimeToFullDate
+import com.itssinghankit.stockex.util.dateToFullDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -25,7 +24,7 @@ class GetAllYrGraphDataUseCase @Inject constructor(
                     is ApiResult.Success -> {
                         val data = result.data.map {
                             val outputLabel =
-                                "$${String.format("%.2f", it.value)} | ${dateTimeToFullDate(it.label)}"
+                                "$${String.format("%.2f", it.value)} | ${dateToFullDate(it.label)}"
                             ChartModel(
                                 label = outputLabel,
                                 value = it.value

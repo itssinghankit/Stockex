@@ -10,7 +10,8 @@ sealed interface DataError: Error {
         UNKNOWN,
         ALREADY_CREATED,
         BAD_REQUEST,
-        PAYLOAD_TOO_LARGE
+        PAYLOAD_TOO_LARGE,
+        API_LIMIT_EXCEEDED
     }
     enum class Local:DataError{
         DISK_FULL,

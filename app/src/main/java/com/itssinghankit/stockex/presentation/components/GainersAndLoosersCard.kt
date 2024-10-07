@@ -2,6 +2,7 @@ package com.itssinghankit.stockex.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,7 +37,8 @@ import kotlin.math.abs
 fun GainersAndLoosers(
     modifier: Modifier,
     topic: String,
-    gainersLoosersList: List<GainersLoosersModel>
+    gainersLoosersList: List<GainersLoosersModel>,
+    onCardClick:(String)->Unit
 ) {
     Column(modifier = modifier) {
         Text(
@@ -55,7 +57,8 @@ fun GainersAndLoosers(
                     volume = gainersLoosersList[index].volume,
                     price = gainersLoosersList[index].price,
                     changeAmount = gainersLoosersList[index].changeAmount,
-                    percentage = gainersLoosersList[index].changePercentage
+                    percentage = gainersLoosersList[index].changePercentage,
+                    onCardClick = onCardClick
                 )
             }
         }
@@ -69,10 +72,11 @@ fun StockCard(
     volume: String,
     price: String,
     changeAmount: String,
-    percentage: String
+    percentage: String,
+    onCardClick:(String)->Unit
 ) {
     Card(
-        modifier = modifier.width(200.dp),
+        modifier = modifier.width(200.dp).clickable { onCardClick(symbol) },
         shape = MaterialTheme.shapes.extraSmall,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -80,7 +84,7 @@ fun StockCard(
         val changeTxt = if (changeAmount.toFloat() > 0) {
             "+$${String.format("%.2f",changeAmount.toFloat())} (+${percentage})"
         } else {
-            "-$${abs(changeAmount.toFloat())} (-${abs(percentage.toFloat())}"
+            "-$${abs(changeAmount.toFloat())} (${percentage})"
         }
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier.padding(0.dp), verticalAlignment = Alignment.CenterVertically) {
