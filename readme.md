@@ -9,6 +9,7 @@ StockEx is a comprehensive stock market application that provides real-time stoc
     
 https://github.com/user-attachments/assets/7686890f-fd58-4cc9-85f8-e1b0152a61cd
 </div>
+
 ## Features
 
 ### Splash Screen
