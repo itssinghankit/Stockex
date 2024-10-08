@@ -49,7 +49,7 @@ StockEx is a comprehensive stock market application that provides real-time stoc
 ### Additional Features
 - `Day and night mode UI`
 - Comprehensive error handling with snackbar notifications
-- `Offline mode with network issue notifications`
+- `Network connection issue notifications`
 
 ## Technologies Used
 
