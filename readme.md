@@ -2,9 +2,13 @@
 
 StockEx is a comprehensive stock market application that provides real-time stock information, portfolio tracking, and detailed stock analysis.
 
+` You can download the app from the STOCKEX APK FILE folder present in the root directory of project uploaded here. `
+
 ## Video Demo
-
-
+<div align=center>
+    
+https://github.com/user-attachments/assets/7686890f-fd58-4cc9-85f8-e1b0152a61cd
+</div>
 ## Features
 
 ### Splash Screen
