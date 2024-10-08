@@ -6,7 +6,9 @@ import com.itssinghankit.stockex.data.remote.dto.details.DetailsResDto
 import com.itssinghankit.stockex.data.remote.dto.details.all.AllYrGraphDto
 import com.itssinghankit.stockex.data.remote.dto.details.day.DayGraphDto
 import com.itssinghankit.stockex.data.remote.dto.details.five_year.FiveYrGraphDto
+import com.itssinghankit.stockex.data.remote.dto.details.month.MonthGraphDto
 import com.itssinghankit.stockex.data.remote.dto.details.one_year.OneYrGraphDto
+import com.itssinghankit.stockex.data.remote.dto.details.week.WeekGraphDto
 import com.itssinghankit.stockex.data.remote.dto.home.GainersLoosersDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -47,7 +49,7 @@ interface AlphaVantageApi {
         @Query("interval") interval: String = "5min",
         @Query("outputsize") outputsize: String = "full",
         @Query("apikey") apikey: String = BuildConfig.ALPHA_VANTAGE_API_KEY,
-    ): DayGraphDto
+    ): WeekGraphDto
 
     @GET("query")
     suspend fun getMonthData(
@@ -56,7 +58,7 @@ interface AlphaVantageApi {
         @Query("interval") interval: String = "15min",
         @Query("outputsize") outputsize: String = "full",
         @Query("apikey") apikey: String = BuildConfig.ALPHA_VANTAGE_API_KEY,
-    ): DayGraphDto
+    ): MonthGraphDto
 
     @GET("query")
     suspend fun getOneYearData(
